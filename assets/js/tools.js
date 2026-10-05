@@ -129,49 +129,48 @@
     var LV = { "0": ["Excellent day", "q0"], "1": ["Good day", "q1"], "2": ["Fair day", "q2"], "3": ["Mixed — caution", "q3"], "4": ["Poor day", "q4"], "5": ["Very poor day", "q5"], "-1": ["Neutral day", "q2"] };
     var CLASH = { "鼠":"Rat","牛":"Ox","虎":"Tiger","兔":"Rabbit","龙":"Dragon","蛇":"Snake","马":"Horse","羊":"Goat","猴":"Monkey","鸡":"Rooster","狗":"Dog","猪":"Pig" };
     var LM = ["", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
-    var ALM = null, view = new Date(), sel = null, purpose = "";
+    var MORE = { "移徙":"Moving house","动土":"Groundbreaking","起基":"Laying foundations","上梁":"Raising the roof beam","安门":"Installing doors","造仓":"Building storage","造畜稠":"Building animal pens","开光":"Consecration","掘井":"Digging a well","教牛马":"Training livestock","分居":"Separating households","作灶":"Building a stove","出火":"Moving the hearth","安香":"Setting up an altar","扫舍":"House cleaning","造桥":"Bridge building","订盟":"Engagement","造车器":"Making vehicles","交易":"Trading","会亲友":"Meeting family & friends","安机械":"Installing machinery","盖屋":"Roofing","行丧":"Funeral procession","开生坟":"Preparing a tomb","竖柱":"Raising pillars","移柩":"Moving a coffin","入殓":"Encoffining","启钻":"Exhumation","修坟":"Tomb repair","立碑":"Erecting a tombstone","开池":"Digging a pond","取渔":"Fishing","探病":"Visiting the sick","馀事勿取":"Nothing else advised","无":"None","开厕":"Building a toilet","破屋":"Demolition","坏垣":"Breaking walls","拆卸":"Dismantling","除服":"Ending mourning","成服":"Wearing mourning dress","理发":"Haircut","造庙":"Temple building","裁衣":"Tailoring","置产":"Buying property","治病":"Medical treatment","针灸":"Acupuncture","塑绘":"Sculpting & painting","定磉":"Setting foundation stones","放水":"Draining water","谢土":"Thanking the earth","出货财":"Shipping goods","词讼":"Lawsuits","斋醮":"Taoist rites","安碓磑":"Installing a mill","合帐":"Hanging bed curtains","问名":"Matchmaking enquiry","挂匩":"Hanging a plaque","作梁":"Making beams","造船":"Shipbuilding","结网":"Weaving nets","雇佣":"Hiring staff","冠笄":"Coming-of-age ceremony","求医":"Seeing a doctor","合寿木":"Making a coffin","筑堤":"Building embankments","架马":"Erecting scaffolding","开柱眼":"Drilling pillar holes","纳婿":"Welcoming a son-in-law","修门":"Repairing doors","断蚁":"Pest control","习艺":"Learning a skill","割蜜":"Harvesting honey","归岫":"Returning home","雕刻":"Carving","普渡":"Ghost Festival offerings","合脊":"Sealing the roof ridge","乘船":"Boat travel","归宁":"Bride's home visit" };
+    for (var mk in MORE) if (!EN[mk]) EN[mk] = MORE[mk];
+    var ALIAS = { "搬移":"移徙", "开张":"开市", "立券交易":"交易", "营建":"动土", "求医疗病":"求医", "结婚姻":"订盟" };
+    var view = new Date(), sel = null, purpose = "", ready = false, cache = {};
     var mSel = $("#alm-month"), pSel = $("#alm-purpose"), grid = $("#alm-grid"), det = $("#alm-detail"), sum = $("#alm-summary");
     var start = new Date(2026, 0, 1), end = new Date(2028, 11, 31);
     if (view < start || view > end) view = new Date(2026, 0, 1);
     for (var y = 2026; y <= 2028; y++) for (var m = 0; m < 12; m++) { var o = document.createElement("option"); o.value = y + "-" + m; o.textContent = new Date(y, m, 1).toLocaleString("en", { month: "long", year: "numeric" }); mSel.appendChild(o); }
     mSel.value = view.getFullYear() + "-" + view.getMonth();
-    function decodeAlm(j) {
-      if (j.days) return j;
-      var A = [], V = {}; for (var c = 40; c < 126; c++) if (c !== 92) A.push(String.fromCharCode(c));
-      A.forEach(function (ch, i) { V[ch] = i; });
-      var S = "甲乙丙丁戊己庚辛壬癸", B = "子丑寅卯辰巳午未申酉戌亥", Z = "鼠牛虎兔龙蛇马羊猴鸡狗猪";
-      var days = j.d.split("#").map(function (s, i) {
-        var p = s.slice(4).split("!"), n = (j.anchor + i) % 60, br = n % 12;
-        return [V[s[0]], V[s[1]], s[2] === "1" ? 1 : 0, S[n % 10] + B[br], Z[br] + "日冲" + Z[(br + 6) % 12],
-          p[0].split("").map(function (x) { return V[x]; }), p[1].split("").map(function (x) { return V[x]; }), V[s[3]] - 1, j.st[i] || ""];
-      });
-      return { terms: j.terms, days: days };
+    /* Almanac engine: lunar-javascript by 6tail (MIT licence), loaded from jsDelivr. */
+    function rec(d) {
+      var k = d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate();
+      if (cache[k]) return cache[k];
+      var l = window.Solar.fromYmd(d.getFullYear(), d.getMonth() + 1, d.getDate()).getLunar();
+      var yi = l.getDayYi(), ji = l.getDayJi(), lv = l.getDayTianShenLuck() === "吉" ? 1 : 3;
+      if (yi.indexOf("诸事不宜") > -1) lv = 5;
+      return (cache[k] = [Math.abs(l.getMonth()), l.getDay(), l.getMonth() < 0 ? 1 : 0, l.getDayInGanZhi(), l.getDayShengXiao() + "日冲" + l.getDayChongShengXiao(), yi, ji, lv, l.getJieQi() || "", l.getDayTianShen(), l.getZhiXing()]);
     }
-    function idx(d) { return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 0, 1)) / 864e5); }
-    function rec(d) { return ALM.days[idx(d)]; }
-    function tr(list) { return list.map(function (i) { var t = ALM.terms[i]; return (EN[t] || t) + ' <span class="zh small muted">' + t + '</span>'; }); }
-    function good(r, pIdx) { return pIdx.some(function (i) { return r[5].indexOf(i) > -1; }) && r[7] <= 2; }
+    function tr(list) { return list.map(function (t) { return (EN[t] || t) + ' <span class="zh small muted">' + t + '</span>'; }); }
+    function good(r, terms) { return terms.some(function (t) { return r[5].indexOf(t) > -1; }) && r[7] <= 2; }
     function draw() {
+      if (!ready) return;
       var ym = mSel.value.split("-").map(Number), first = new Date(ym[0], ym[1], 1), days = new Date(ym[0], ym[1] + 1, 0).getDate();
-      var pIdx = purpose ? purpose.split("|").map(function (t) { return ALM.terms.indexOf(t); }).filter(function (i) { return i > -1; }) : [];
+      var terms = purpose ? purpose.split("|").map(function (t) { return ALIAS[t] || t; }) : [];
       var h = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(function (d) { return '<div class="dh">' + d + '</div>'; }).join("");
       for (var i = 0; i < first.getDay(); i++) h += '<div class="empty"></div>';
       var matches = [];
       for (var d = 1; d <= days; d++) {
-        var dt = new Date(ym[0], ym[1], d), r = rec(dt), q = LV[String(r[7])], mt = pIdx.length && good(r, pIdx);
+        var dt = new Date(ym[0], ym[1], d), r = rec(dt), q = LV[String(r[7])], mt = terms.length && good(r, terms);
         if (mt) matches.push(d);
         var isSel = sel && sel.getTime() === dt.getTime();
-        h += '<button type="button" data-d="' + d + '" class="' + q[1] + (mt ? " match" : "") + (isSel ? " sel" : "") + '" aria-label="' + dt.toDateString() + ', ' + q[0] + '"><b>' + d + '</b><small>' + (r[2] ? "闰" : "") + LM[r[0]].replace(/\D+/, "") + "/" + r[1] + '</small>' + (r[8] ? '<small>' + r[8] + '</small>' : "") + '</button>';
+        h += '<button type="button" data-d="' + d + '" class="' + q[1] + (mt ? " match" : "") + (isSel ? " sel" : "") + '" aria-label="' + dt.toDateString() + ', ' + q[0] + '"><b>' + d + '</b><small>' + (r[2] ? "闰" : "") + r[0] + "/" + r[1] + '</small>' + (r[8] ? '<small>' + r[8] + '</small>' : "") + '</button>';
       }
       grid.innerHTML = h;
-      sum.innerHTML = purpose ? (matches.length ? '<b>' + matches.length + ' recommended day(s)</b> for ' + pSel.options[pSel.selectedIndex].text.toLowerCase() + ' this month: ' + matches.join(", ") + ' (outlined in gold).' : 'No strongly recommended days for this purpose this month — try the next month.') : 'Pick a purpose to highlight the best days. Green = traditionally favourable days.';
+      sum.innerHTML = purpose ? (matches.length ? '<b>' + matches.length + ' recommended day(s)</b> for ' + pSel.options[pSel.selectedIndex].text.toLowerCase() + ' this month: ' + matches.join(", ") + ' (outlined in gold).' : 'No strongly recommended days for this purpose this month — try the next month.') : 'Pick a purpose to highlight the best days. Green = traditionally favourable (黄道) days.';
     }
     function detail(dt) {
       var r = rec(dt), q = LV[String(r[7])], clash = r[4].replace(/.*冲/, "");
       var lmn = r[0], ghost = lmn === 7 && !r[2];
       var dstr = String(dt.getFullYear()) + String(dt.getMonth() + 1).padStart(2, "0") + String(dt.getDate()).padStart(2, "0");
       var nr = L.analyse(dstr);
-      det.innerHTML = '<div class="card"><div class="meta"><span class="badge' + (r[7] >= 4 ? " r" : "") + '">' + q[0] + '</span><span>' + dt.toDateString() + '</span></div>' +
+      det.innerHTML = '<div class="card"><div class="meta"><span class="badge' + (r[7] >= 4 ? " r" : "") + '">' + q[0] + '</span><span>' + dt.toDateString() + '</span><span class="zh">' + r[9] + ' · ' + r[10] + '日</span></div>' +
         '<h3 style="margin-top:10px">Lunar ' + (r[2] ? "leap " : "") + LM[lmn] + ' month, day ' + r[1] + ' · Day pillar <span class="zh">' + r[3] + '</span></h3>' +
         '<p>Clashes with: <b>' + (CLASH[clash] || clash) + '</b> <span class="zh">(' + r[4] + ')</span> — people born in that year traditionally avoid big events today.' + (r[8] ? ' Solar term: <span class="zh">' + r[8] + '</span>.' : '') + (ghost ? ' <b>Ghost Month</b> — weddings and moves are traditionally avoided.' : '') + '</p>' +
         '<div class="grid g2"><div><h4>✓ Favourable for</h4><ul class="small">' + tr(r[5]).map(function (x) { return '<li>' + x + '</li>'; }).join("") + '</ul></div><div><h4>✕ Avoid</h4><ul class="small">' + tr(r[6]).slice(0, 14).map(function (x) { return '<li>' + x + '</li>'; }).join("") + (r[6].length > 14 ? '<li>…and ' + (r[6].length - 14) + ' more</li>' : '') + '</ul></div></div>' +
@@ -182,7 +181,11 @@
     mSel.addEventListener("change", draw); pSel.addEventListener("change", function () { purpose = pSel.value; draw(); });
     $("#alm-prev").addEventListener("click", function () { if (mSel.selectedIndex > 0) { mSel.selectedIndex--; draw(); } });
     $("#alm-next").addEventListener("click", function () { if (mSel.selectedIndex < mSel.options.length - 1) { mSel.selectedIndex++; draw(); } });
-    fetch(root + "assets/data/almanac.json").then(function (r) { return r.json(); }).then(function (j) { ALM = decodeAlm(j); draw(); var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); if (t >= start && t <= end) { sel = t; draw(); detail(t); } }).catch(function () { grid.innerHTML = '<p>Could not load almanac data. Please refresh.</p>'; });
+    grid.innerHTML = '<p class="muted">Loading almanac…</p>';
+    var ls = document.createElement("script"); ls.src = "https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js";
+    ls.onload = function () { ready = true; draw(); var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); if (t >= start && t <= end) { sel = t; draw(); detail(t); } };
+    ls.onerror = function () { grid.innerHTML = '<p>Could not load the almanac engine. Please refresh.</p>'; };
+    document.head.appendChild(ls);
   }
 
   /* ---------- combo dictionary search ---------- */
