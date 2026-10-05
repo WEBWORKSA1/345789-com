@@ -15,7 +15,7 @@ assets/js/config.js      ← the only file you edit for AdSense, YouTube, donati
 assets/js/numbers.js     number-intelligence engine
 assets/js/tools.js       tool UIs
 assets/js/app.js         nav, theme, forms, ads, video, modals
-assets/data/             cny.json (Lunar New Year 1900–2100), almanac.json (Tong Shu 2026–2028)
+assets/data/cny.json     Lunar New Year dates 1900–2100 (almanac runs in-browser via lunar-javascript, MIT)
 _src/                    page content (Python) → `python3 build.py` regenerates all pages + sitemap
 project-docs/            RESEARCH.md (findings & decision) · BUILD-PROMPTS.md (phase-wise prompts)
 ```
@@ -35,8 +35,8 @@ Pages source: Settings → Pages → Deploy from a branch → `main` / root (or 
 
 ## Regenerating locally
 ```
-pip install cnlunar lunardate
-python3 gen_data.py   # almanac + Lunar New Year data
+pip install lunardate
+python3 gen_data.py   # Lunar New Year data
 python3 build.py      # rebuild pages from _src/
 ```
 
