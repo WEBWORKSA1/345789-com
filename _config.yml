@@ -1,0 +1,7 @@
+# 345789.com — GitHub Pages (Jekyll) settings
+title: "345789 · The Lucky Number Lab"
+# GitHub project URL (webworksa1.github.io/345789-com). When the custom domain 345789.com is live, change to: baseurl: ""
+baseurl: "/345789-com"
+url: "https://345789.com"
+exclude: [build.py, gen_data.py, README.md, project-docs, _src, Gemfile, Gemfile.lock, node_modules]
+include: [".well-known"]

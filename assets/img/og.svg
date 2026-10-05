@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8102E"/><stop offset=".6" stop-color="#E0452B"/><stop offset="1" stop-color="#D4A017"/></linearGradient></defs>
+<rect width="1200" height="630" fill="#120E0C"/><rect x="0" y="0" width="1200" height="12" fill="url(#g)"/>
+<text x="80" y="200" font-family="Arial,Helvetica,sans-serif" font-size="150" font-weight="800" fill="url(#g)">345789</text>
+<text x="84" y="285" font-family="Arial,Helvetica,sans-serif" font-size="54" font-weight="700" fill="#F6EDE3">The Lucky Number Lab</text>
+<text x="84" y="360" font-family="Arial,Helvetica,sans-serif" font-size="32" fill="#BBA894">Chinese lucky-number analyzer · almanac · zodiac · domain valuer</text>
+<g font-family="Arial,Helvetica,sans-serif" font-size="64" font-weight="800" text-anchor="middle">
+<rect x="84" y="420" width="110" height="130" rx="18" fill="#1F1814"/><text x="139" y="510" fill="#F6EDE3">3</text>
+<rect x="210" y="420" width="110" height="130" rx="18" fill="#1F1814" stroke="#FF4D5E" stroke-width="4" stroke-dasharray="10 8"/><text x="265" y="510" fill="#F6EDE3">4</text>
+<rect x="336" y="420" width="110" height="130" rx="18" fill="#1F1814"/><text x="391" y="510" fill="#F6EDE3">5</text>
+<rect x="462" y="420" width="110" height="130" rx="18" fill="url(#g)"/><text x="517" y="510" fill="#fff">7</text>
+<rect x="588" y="420" width="110" height="130" rx="18" fill="url(#g)"/><text x="643" y="510" fill="#fff">8</text>
+<rect x="714" y="420" width="110" height="130" rx="18" fill="url(#g)"/><text x="769" y="510" fill="#fff">9</text></g>
+<circle cx="1010" cy="300" r="140" fill="url(#g)"/><circle cx="1010" cy="300" r="104" fill="none" stroke="#F4D774" stroke-width="8"/><rect x="972" y="262" width="76" height="76" rx="8" fill="#FFFBF5"/><text x="1010" y="322" text-anchor="middle" font-family="Arial" font-size="60" font-weight="800" fill="#C8102E">8</text></svg>
