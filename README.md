@@ -21,14 +21,16 @@ project-docs/            RESEARCH.md (findings & decision) · BUILD-PROMPTS.md (
 ```
 
 ## How publishing works
-`main` holds the sources. On every push, `.github/workflows/deploy.yml` generates the almanac data, images and all HTML pages and publishes the finished site to the `gh-pages` branch, which GitHub Pages serves (Settings → Pages → Deploy from branch → `gh-pages` / root).
+GitHub Pages builds this repo with Jekyll on the free plan — no workflow needed. Every page file (`*.html`) holds front matter plus its body; `_layouts/default.html` adds the shared head, top contact bar, header, footer and lead modal; `_includes/sidebar.html` is the shared sidebar. To change content, edit `_src/*.py` and run `python3 build.py`, then commit the regenerated pages.
+
+Pages source: Settings → Pages → Deploy from a branch → `main` / root (or `gh-pages`).
 
 ## Go-live checklist
 1. **Forms:** the first submission sends a FormSubmit activation email to the site inbox — click *Activate Form* once. All forms then deliver there. The address is never shown on the site (it is assembled at runtime from an obfuscated array in `config.js`).
 2. **AdSense:** once approved, set `ADSENSE_CLIENT` (and optional slot ids) in `assets/js/config.js`, and put your publisher id in `ads.txt`. Until then, slots show house ads.
 3. **YouTube:** add video ids to `VIDEOS` in `config.js`.
 4. **Donations:** add PayPal.me / Ko-fi / Buy Me a Coffee / Stripe links to `DONATE` in `config.js`.
-5. **Custom domain:** add a `CNAME` file containing `345789.com`; at the registrar set A records `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` and `www` CNAME → `webworksa1.github.io`; then enable *Enforce HTTPS* in Settings → Pages.
+5. **Custom domain:** set `baseurl: ""` in `_config.yml`, add a `CNAME` file containing `345789.com`; at the registrar set A records `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` and `www` CNAME → `webworksa1.github.io`; then enable *Enforce HTTPS* in Settings → Pages.
 6. Submit `sitemap.xml` in Google Search Console.
 
 ## Regenerating locally
