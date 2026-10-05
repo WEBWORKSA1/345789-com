@@ -1,7 +1,3 @@
-*.html
-!_src/
-sitemap.xml
-assets/data/
-assets/img/*.png
 __pycache__/
 _site/
+assets/img/*.png
