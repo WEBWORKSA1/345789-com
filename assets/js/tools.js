@@ -135,6 +135,18 @@
     if (view < start || view > end) view = new Date(2026, 0, 1);
     for (var y = 2026; y <= 2028; y++) for (var m = 0; m < 12; m++) { var o = document.createElement("option"); o.value = y + "-" + m; o.textContent = new Date(y, m, 1).toLocaleString("en", { month: "long", year: "numeric" }); mSel.appendChild(o); }
     mSel.value = view.getFullYear() + "-" + view.getMonth();
+    function decodeAlm(j) {
+      if (j.days) return j;
+      var A = [], V = {}; for (var c = 40; c < 126; c++) if (c !== 92) A.push(String.fromCharCode(c));
+      A.forEach(function (ch, i) { V[ch] = i; });
+      var S = "甲乙丙丁戊己庚辛壬癸", B = "子丑寅卯辰巳午未申酉戌亥", Z = "鼠牛虎兔龙蛇马羊猴鸡狗猪";
+      var days = j.d.split("#").map(function (s, i) {
+        var p = s.slice(4).split("!"), n = (j.anchor + i) % 60, br = n % 12;
+        return [V[s[0]], V[s[1]], s[2] === "1" ? 1 : 0, S[n % 10] + B[br], Z[br] + "日冲" + Z[(br + 6) % 12],
+          p[0].split("").map(function (x) { return V[x]; }), p[1].split("").map(function (x) { return V[x]; }), V[s[3]] - 1, j.st[i] || ""];
+      });
+      return { terms: j.terms, days: days };
+    }
     function idx(d) { return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 0, 1)) / 864e5); }
     function rec(d) { return ALM.days[idx(d)]; }
     function tr(list) { return list.map(function (i) { var t = ALM.terms[i]; return (EN[t] || t) + ' <span class="zh small muted">' + t + '</span>'; }); }
@@ -170,7 +182,7 @@
     mSel.addEventListener("change", draw); pSel.addEventListener("change", function () { purpose = pSel.value; draw(); });
     $("#alm-prev").addEventListener("click", function () { if (mSel.selectedIndex > 0) { mSel.selectedIndex--; draw(); } });
     $("#alm-next").addEventListener("click", function () { if (mSel.selectedIndex < mSel.options.length - 1) { mSel.selectedIndex++; draw(); } });
-    fetch(root + "assets/data/almanac.json").then(function (r) { return r.json(); }).then(function (j) { ALM = j; draw(); var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); if (t >= start && t <= end) { sel = t; draw(); detail(t); } }).catch(function () { grid.innerHTML = '<p>Could not load almanac data. Please refresh.</p>'; });
+    fetch(root + "assets/data/almanac.json").then(function (r) { return r.json(); }).then(function (j) { ALM = decodeAlm(j); draw(); var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); if (t >= start && t <= end) { sel = t; draw(); detail(t); } }).catch(function () { grid.innerHTML = '<p>Could not load almanac data. Please refresh.</p>'; });
   }
 
   /* ---------- combo dictionary search ---------- */
